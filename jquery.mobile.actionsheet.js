@@ -6,6 +6,9 @@
  * 
  * Date: 2011-05-03 17:11:00 (Tue, 3 May 2011)
  * Revision: 1.1
+ * 
+ * Revised by: Tanvir M
+ * 
  */
 (function($,window){
 	$.widget("mobile.actionsheet",$.mobile.widget,{
@@ -24,6 +27,15 @@
 					this.content.parents(':jqmData(role="page")').children(':jqmData(role="content")');
 				this.content.remove().appendTo(currentContent);
 			}
+			
+			//If the walpaper DIV is not created by another actionsheet
+			if(this.content.parents(':jqmData(role="page")').children(':jqmData(role="content")').find('.ui-actionsheet-wallpaper').length == 0 ) {
+				//Create the wallpaper DIV
+				$('<div>', {'class':'ui-actionsheet-wallpaper'})
+					.appendTo(this.content.parents(':jqmData(role="page")').children(':jqmData(role="content")'))
+					.hide();
+				}
+
 			//setup command buttons
 			this.content.find(':jqmData(role="button")').filter(':jqmData(rel!="close")')
 				.addClass('ui-actionsheet-commandbtn')
@@ -46,13 +58,16 @@
 		open: function() {
 			this.element.unbind('vclick'); //avoid twice opening
 			
-			var cc= this.content.parents(':jqmData(role="content")');
-			this.wallpaper= $('<div>', {'class':'ui-actionsheet-wallpaper'})
-				.appendTo(cc)
-				.show();
+			//var cc= this.content.parents(':jqmData(role="content")');
+			//this.wallpaper= $('<div>', {'class':'ui-actionsheet-wallpaper'})
+				//.appendTo(cc)
+				//.show();
+			
+			$('.ui-actionsheet-wallpaper').show();	
  
 			window.setTimeout(function(self) {
-				self.wallpaper.bind('vclick', function() {
+				//self.wallpaper.bind('vclick', function() {
+				$('.ui-actionsheet-wallpaper').bind('vclick', function() {
 					self.close();
 				});
 			}, 500, this);
@@ -70,16 +85,19 @@
 		},
 		close: function() {
 			var self = this;
-			this.wallpaper.unbind('vclick');
+			//this.wallpaper.unbind('vclick');
+			$('.ui-actionsheet-wallpaper').unbind('click vclick');
 			$(window).unbind('orientationchange.actionsheet');
 			if( $.support.cssTransitions ) {
 				this.content.addClass("ui-actionsheet-animateOut");
-				this.wallpaper.remove();
+				//this.wallpaper.remove();
+				$('.ui-actionsheet-wallpaper').hide();
 				this.content.animationComplete(function() {
 					self.reset();
 				});
 			} else {
-				this.wallpaper.remove();
+				//this.wallpaper.remove();
+				$('.ui-actionsheet-wallpaper').hide();
 				this.content.fadeOut();
 				this.element.bind('vclick', function(){
 					self.open();
@@ -87,7 +105,8 @@
 			}
 		},
 		reset: function() {
-			this.wallpaper.remove();
+			//this.wallpaper.remove();
+			$('.ui-actionsheet-wallpaper').hide();
 			this.content
 				.removeClass("ui-actionsheet-animateOut")
 				.removeClass("ui-actionsheet-animateIn")
